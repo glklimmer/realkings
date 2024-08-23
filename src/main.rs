@@ -2,11 +2,16 @@ use bevy::{
     pbr::{CascadeShadowConfigBuilder, NotShadowCaster},
     prelude::*,
 };
+use bevy_third_person_camera::*;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_systems(Startup, (setup_camera, setup_terrain_scene, setup_units))
+        .add_plugins(ThirdPersonCameraPlugin)
+        .add_systems(
+            Startup,
+            (setup_camera, setup_terrain_scene, setup_player, setup_units),
+        )
         .run();
 }
 
@@ -15,6 +20,25 @@ fn setup_camera(mut commands: Commands) {
         Camera3dBundle {
             transform: Transform::from_xyz(10.0, 5.0, 10.0).looking_at(Vec3::ZERO, Vec3::Y),
             //transform: Transform::from_xyz(15.0, 5.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
+            ..default()
+        },
+        ThirdPersonCamera {
+            aim_enabled: true,
+            aim_button: MouseButton::Right,
+            aim_speed: 3.0,
+            aim_zoom: 0.7,
+            cursor_lock_key: KeyCode::Space,
+            cursor_lock_toggle_enabled: true,
+            cursor_lock_active: true,
+            sensitivity: Vec2::new(2.0, 2.0),
+            mouse_orbit_button_enabled: false,
+            offset_enabled: false,
+            offset: Offset::new(0.5, 0.4),
+            offset_toggle_enabled: false,
+            offset_toggle_speed: 5.0,
+            offset_toggle_key: KeyCode::KeyE,
+            zoom: Zoom::new(10., 10.),
+            zoom_sensitivity: 1.0,
             ..default()
         },
         FogSettings {
@@ -91,19 +115,32 @@ fn setup_terrain_scene(
     ));
 }
 
-fn setup_units(
+#[derive(Component)]
+struct Player;
+
+fn setup_player(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     // Capsule
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(Capsule3d::default()),
-        material: materials.add(Color::hsl(237., 0.75, 0.5)),
-        transform: Transform::from_xyz(5.0, 1., 0.0),
-        ..default()
-    });
+    commands.spawn((
+        PbrBundle {
+            mesh: meshes.add(Capsule3d::default()),
+            material: materials.add(Color::hsl(237., 0.75, 0.5)),
+            transform: Transform::from_xyz(5.0, 1., 0.0),
+            ..default()
+        },
+        ThirdPersonCameraTarget,
+        Player,
+    ));
+}
 
+fn setup_units(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
     // Capsule
     commands.spawn(PbrBundle {
         mesh: meshes.add(Capsule3d::default()),
