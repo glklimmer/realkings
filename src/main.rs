@@ -1,3 +1,4 @@
+use avian3d::prelude::*;
 use bevy::{
     pbr::{CascadeShadowConfigBuilder, NotShadowCaster},
     prelude::*,
@@ -8,6 +9,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(ThirdPersonCameraPlugin)
+        .add_plugins(PhysicsPlugins::default())
         .add_systems(
             Startup,
             (setup_camera, setup_terrain_scene, setup_player, setup_units),
@@ -90,12 +92,26 @@ fn setup_terrain_scene(
     //     ..default()
     // });
     commands.spawn((
+        RigidBody::Static,
+        Collider::cylinder(4.0, 0.1),
         PbrBundle {
             mesh: meshes.add(Plane3d::default().mesh().size(20., 20.)),
             material: materials.add(Color::srgb(0.3, 0.5, 0.3)),
             ..default()
         },
         Ground,
+    ));
+
+    commands.spawn((
+        RigidBody::Dynamic,
+        Collider::cuboid(1.0, 1.0, 1.0),
+        AngularVelocity(Vec3::new(2.5, 3.5, 1.5)),
+        PbrBundle {
+            mesh: meshes.add(Cuboid::new(1.0, 1.0, 1.0)),
+            material: materials.add(Color::srgb_u8(124, 144, 255)),
+            transform: Transform::from_xyz(0.0, 4.0, 0.0),
+            ..default()
+        },
     ));
 
     // Sky
