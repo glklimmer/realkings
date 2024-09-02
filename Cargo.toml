@@ -11,6 +11,14 @@ opt-level = 1
 [profile.dev.package."*"]
 opt-level = 3
 
+[[bin]]
+name = "server"
+path = "src/bin/server.rs"
+
+[[bin]]
+name = "client"
+path = "src/bin/client.rs"
+
 [dependencies]
 avian3d = "0.1.2"
 bevy = "0.14.1"

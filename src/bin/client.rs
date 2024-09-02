@@ -4,15 +4,9 @@ use bevy_third_person_camera::*;
 use bevy_tnua::prelude::*;
 use bevy_tnua_avian3d::*;
 
-use camera::CameraPlugin;
-use player::PlayerPlugin;
-use terrain::TerrainPlugin;
-use units::UnitsPlugin;
-
-mod camera;
-mod player;
-mod terrain;
-mod units;
+use realkings::{
+    camera::CameraPlugin, player::PlayerPlugin, terrain::TerrainPlugin, units::UnitsPlugin,
+};
 
 fn main() {
     App::new()
